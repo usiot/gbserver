@@ -1,8 +1,10 @@
 package config
 
 var Conf struct {
-	Sip    `json:"sip"`
-	Logger `json:"logger"`
+	Redis string `json:"redis"`
+	Sip   `json:"sip"`
+	Log   `json:"log"`
+	Mysql `json:"mysql"`
 }
 
 type (
@@ -16,11 +18,19 @@ type (
 		UserAgent  string `json:"userAgent"`
 	}
 
-	Logger struct {
+	Log struct {
 		Filename   string `json:"filename"`
 		MaxSize    int64  `json:"maxSize"`
 		MaxAge     int    `json:"maxAge"`
 		Level      int    `json:"level"`
 		MaxBackups int    `json:"maxBackups"`
+	}
+
+	Mysql struct {
+		Host     string `json:"host"`
+		Port     uint16 `json:"port"`
+		User     string `json:"user"`
+		Password string `json:"password"`
+		Dbname   string `json:"dbname"`
 	}
 )

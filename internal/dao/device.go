@@ -79,7 +79,7 @@ func ChangeDeviceStatus(ctx context.Context, did string, status uint8) error {
 }
 
 func UpdateDevice(ctx context.Context, dev *DbDevice) error {
-	return Update(ctx, TableDevice, &DbPtrDevice{
+	return InsertOrUpdate(ctx, TableDevice, &DbPtrDevice{
 		DeviceId:          dev.DeviceId,
 		Domain:            &dev.Domain,
 		Name:              &dev.Name,
@@ -109,7 +109,7 @@ func (i *DbDevice) SQLValues() internal.SQLPairs {
 		{K: "`MODEL`", V: i.Model},
 		{K: "`FIRMWARE`", V: i.Firmware},
 		{K: "`TRANSPORT`", V: i.Transport},
-		{K: "`OFFLINE`", V: i.Status},
+		{K: "`STATUS`", V: i.Status},
 		{K: "`IP`", V: i.Ip},
 		{K: "`PORT`", V: i.Port},
 		{K: "`EXPIRES`", V: i.Expires},
@@ -131,7 +131,7 @@ func (i *DbPtrDevice) SQLValues() SQLPairs {
 		{K: "`MODEL`", V: i.Model},
 		{K: "`FIRMWARE`", V: i.Firmware},
 		{K: "`TRANSPORT`", V: i.Transport},
-		{K: "`OFFLINE`", V: i.Status},
+		{K: "`STATUS`", V: i.Status},
 		{K: "`IP`", V: i.Ip},
 		{K: "`PORT`", V: i.Port},
 		{K: "`EXPIRES`", V: i.Expires},
@@ -171,7 +171,7 @@ func (i *DbPtrDevice) SQLPtrNotNilValues() SQLPairs {
 		vals = append(vals, SQLPair{K: "`TRANSPORT`", V: i.Transport})
 	}
 	if i.Status != nil {
-		vals = append(vals, SQLPair{K: "`OFFLINE`", V: i.Status})
+		vals = append(vals, SQLPair{K: "`STATUS`", V: i.Status})
 	}
 	if i.Ip != nil {
 		vals = append(vals, SQLPair{K: "`IP`", V: i.Ip})

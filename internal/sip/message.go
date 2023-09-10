@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/ghettovoice/gosip/sip"
+	"github.com/usiot/gbserver/internal/dao"
 	"github.com/usiot/gbserver/internal/logger"
 	"github.com/usiot/gbserver/internal/sip/siph"
 )
@@ -18,7 +19,7 @@ func MessageHandler(req sip.Request, tx sip.ServerTransaction) {
 
 	body := req.Body()
 	cmdType, err := siph.GetCmdTypeFromXML(body)
-	logger.Debug("解析出的命令：", cmdType)
+	logger.Debug("解析出的命令：%s", cmdType)
 	if err != nil {
 		return
 	}
@@ -28,6 +29,12 @@ func MessageHandler(req sip.Request, tx sip.ServerTransaction) {
 		siph.KeepaliveNotifyHandler(req, tx)
 	case "Notify:Alarm":
 		siph.AlarmNotifyHandler(req, tx)
+		go sipSrv.QueryDeviceStatus(nil, &dao.DbDevice{
+			DeviceId:  "34020000001320000001",
+			Port:      5060,
+			Ip:        "192.168.124.26",
+			Transport: "UDP",
+		})
 	case "Notify:MobilePosition":
 		siph.MobilePositionNotifyHandler(req, tx)
 	case "Response:DeviceInfo": // 查询设备信息响应

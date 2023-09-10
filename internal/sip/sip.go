@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ghettovoice/gosip"
+	"github.com/ghettovoice/gosip/log"
 	"github.com/ghettovoice/gosip/sip"
 	"github.com/usiot/gbserver/internal/cache"
 	"github.com/usiot/gbserver/internal/config"
@@ -29,22 +30,32 @@ const (
 
 var sipSrv Server
 
-func InitSip(cfg *config.Sip) {
+func Init(cfg *config.Sip) {
 	sipSrv = Server{
-		host:    cfg.Host,
+		host:    fmt.Sprintf("%s:%d", cfg.Host, cfg.SipPort),
 		network: cfg.Network,
 		sip: gosip.NewServer(
 			gosip.ServerConfig{UserAgent: cfg.UserAgent},
 			nil,
 			nil,
-			logger.Gsl,
+			log.NewDefaultLogrusLogger(),
 		),
 		cfg: cfg,
 	}
 	sipSrv.Register()
 
-	util.Go(func() { sipSrv.ListenTCP() })
-	util.Go(func() { sipSrv.ListenUDP() })
+	util.Go(func() {
+		err := sipSrv.ListenTCP()
+		if err != nil {
+			logger.Fatal(err.Error())
+		}
+	})
+	util.Go(func() {
+		err := sipSrv.ListenUDP()
+		if err != nil {
+			logger.Fatal(err.Error())
+		}
+	})
 }
 
 func (s *Server) Register() {
@@ -73,12 +84,12 @@ func (s *Server) Shutdown() error {
 }
 
 func (s *Server) QueryDeviceInfo(ctx context.Context, dev *dao.DbDevice) {
-	body := fmt.Sprintf(`<?xml version="1.0" encoding="UTF8"?>
-	<Query>
-		<CmdType>DeviceInfo</CmdType>
-		<SN>701385</SN>
-		<DeviceID>%s</DeviceID>
-	</Query>`, dev.DeviceId)
+	body := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
+<Query>
+  <CmdType>DeviceInfo</CmdType>
+  <SN>701385</SN>
+  <DeviceID>%s</DeviceID>
+</Query>`, dev.DeviceId)
 
 	req := s.createMessageRequest(ctx, dev, body)
 	logger.Debug("查询设备信息请求：\n%s", req)
@@ -91,18 +102,34 @@ func (s *Server) QueryDeviceInfo(ctx context.Context, dev *dao.DbDevice) {
 }
 
 func (s *Server) QueryDeviceCatalog(ctx context.Context, dev *dao.DbDevice) {
-	body := `<?xml version="1.0" encoding="UTF8"?>
-	<Query>
-	  <CmdType>Catalog</CmdType>
-	  <SN>98760</SN>
-	  <DeviceID>44010200491118000001</DeviceID>
-	</Query>`
+	body := `<?xml version="1.0" encoding="utf-8"?>
+<Query>
+  <CmdType>Catalog</CmdType>
+  <SN>98760</SN>
+  <DeviceID>44010200491118000001</DeviceID>
+</Query>`
 	req := s.createMessageRequest(ctx, dev, body)
 	logger.Debug("查询设备目录查询请求：\n%s", req)
 	trans, _ := s.sip.Request(req)
 	if trans != nil {
 		resp := <-trans.Responses()
 		logger.Debug("收到设备目录查询响应：\n%s", resp)
+	}
+}
+
+func (s *Server) QueryDeviceStatus(ctx context.Context, dev *dao.DbDevice) {
+	body := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
+<Query>
+  <CmdType>DeviceStatus</CmdType>
+  <SN>0</SN>
+  <DeviceID>%s</DeviceID>
+</Query>`, dev.DeviceId)
+	req := s.createMessageRequest(ctx, dev, body)
+	logger.Debug("查询设备状态查询请求：\n%s", req)
+	trans, _ := s.sip.Request(req)
+	if trans != nil {
+		resp := <-trans.Responses()
+		logger.Debug("收到设备状态查询响应：\n%s", resp)
 	}
 }
 

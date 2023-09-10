@@ -2,6 +2,7 @@ package logger
 
 import (
 	"io"
+	"os"
 
 	"github.com/inysc/hog"
 	"github.com/usiot/gbserver/internal/config"
@@ -12,18 +13,18 @@ var (
 	lg = hog.DefaultLogger
 )
 
-func Init(cfg *config.Logger) {
-	w = &hog.LoggerFile{
+func Init(cfg *config.Log) {
+	w = io.MultiWriter(os.Stdout, &hog.LoggerFile{
 		Filename:   cfg.Filename,
 		MaxSize:    cfg.MaxSize,
 		MaxAge:     cfg.MaxAge,
 		MaxBackups: cfg.MaxBackups,
 		LocalTime:  false,
 		Compress:   false,
-	}
+	})
 
 	lg = hog.New(uint8(cfg.Level), w)
-	lg.AddSkip(1)
+	lg.AddSkip(2)
 }
 
 func Trace(format string, args ...any) { lg.Trace().Msgf(format, args...) }

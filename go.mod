@@ -5,7 +5,7 @@ go 1.21.0
 require (
 	github.com/ghettovoice/gosip v0.0.0-20230903092020-b059959586db
 	github.com/go-sql-driver/mysql v1.6.0
-	github.com/inysc/hog v0.3.0
+	github.com/inysc/hog v0.3.1
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/redis/go-redis/extra/rediscmd/v9 v9.0.5
 	github.com/redis/go-redis/v9 v9.1.0
@@ -36,5 +36,3 @@ require (
 	golang.org/x/term v0.11.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )
-
-replace github.com/inysc/hog => ../../inysc/hog

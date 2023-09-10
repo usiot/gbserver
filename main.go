@@ -7,14 +7,30 @@ import (
 	"syscall"
 
 	"github.com/usiot/gbserver/handler"
+	"github.com/usiot/gbserver/internal/cache"
 	"github.com/usiot/gbserver/internal/config"
+	"github.com/usiot/gbserver/internal/dao"
+	"github.com/usiot/gbserver/internal/logger"
 	"github.com/usiot/gbserver/internal/sip"
 )
 
 func main() {
-	config.Init("goserve.json")
+	config.Init("server.json")
+	logger.Init(&config.Conf.Log)
+
+	logger.Debug("start server ...[%+v]", config.Conf)
+	log.Printf("start server ...[%+v]", config.Conf)
+
+	dao.Init(
+		config.Conf.Mysql.Host,
+		config.Conf.Mysql.Port,
+		config.Conf.Mysql.User,
+		config.Conf.Mysql.Password,
+		config.Conf.Mysql.Dbname,
+	)
+	cache.Init(config.Conf.Redis)
 	handler.Init()
-	sip.InitSip(&config.Conf.Sip)
+	sip.Init(&config.Conf.Sip)
 
 	// 等待中断信号来优雅地关闭服务器，为关闭服务器操作设置一个5秒的超时
 	quit := make(chan os.Signal, 1) // 创建一个接收信号的通道

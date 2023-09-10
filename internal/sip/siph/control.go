@@ -6,7 +6,7 @@ import (
 )
 
 func DeviceConfigQueryHandler(req sip.Request, tx sip.ServerTransaction) {
-	logger.Debug("获取到的configDownload消息：\n%s", req.Body())
+	// logger.Debug("获取到的configDownload消息：\n%s", req.Body())
 	defer func() {
 		_ = responseAck(tx, req)
 	}()

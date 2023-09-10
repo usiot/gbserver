@@ -26,7 +26,7 @@ func Init(redisURL string) {
 		logger.Fatal("redis连接失败: %s", err)
 	}
 
-	rds.AddHook(nil)
+	rds.AddHook(hook{})
 }
 
 type hook struct{}

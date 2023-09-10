@@ -56,7 +56,7 @@ func AlarmNotifyHandler(req sip.Request, tx sip.ServerTransaction) {
 		return
 	}
 
-	logger.Debug("alarm notify : \n%s", req.Body())
+	logger.Debug("alarm notify : \n%s", alarm.String())
 
 	_ = responseAck(tx, req)
 }
@@ -64,7 +64,7 @@ func AlarmNotifyHandler(req sip.Request, tx sip.ServerTransaction) {
 func MobilePositionNotifyHandler(req sip.Request, tx sip.ServerTransaction) {
 	// 自行扩展
 
-	logger.Debug("mobile position notify: \n%s", req.Body())
+	// logger.Debug("mobile position notify: \n%s", req.Body())
 
 	_ = responseAck(tx, req)
 }

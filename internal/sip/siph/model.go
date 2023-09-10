@@ -1,6 +1,10 @@
 package siph
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"fmt"
+	"strings"
+)
 
 // common struct
 type (
@@ -151,3 +155,71 @@ type (
 		DutyStatus string `xml:"DutyStatus"`
 	}
 )
+
+func (a AlarmNotify) String() string {
+	buf := strings.Builder{}
+
+	// Map报警方式的数字到对应的文本
+	alarmMethods := map[string]string{
+		"1": "电话报警",
+		"2": "设备报警",
+		"3": "短信报警",
+		"4": "GPS报警",
+		"5": "视频报警",
+		"6": "设备故障报警",
+		"7": "其他报警",
+	}
+
+	// Map报警类型的数字到对应的文本
+	alarmTypes := map[string]string{
+		"1":  "视频丢失报警",
+		"2":  "设备防拆报警",
+		"3":  "存储设备磁盘满报警",
+		"4":  "设备高温报警",
+		"5":  "设备低温报警",
+		"6":  "人工视频报警",
+		"7":  "运动目标检测报警",
+		"8":  "遗留物检测报警",
+		"9":  "物体移除检测报警",
+		"10": "绊线检测报警",
+		"11": "入侵检测报警",
+		"12": "逆行检测报警",
+		"13": "徘徊检测报警",
+		"14": "流量统计报警",
+		"15": "密度检测报警",
+		"16": "视频异常检测报警",
+		"17": "快速移动报警",
+		"18": "存储设备磁盘故障报警",
+		"19": "存储设备风扇故障报警",
+	}
+
+	buf.WriteString(fmt.Sprintf("报警级别：%s级警情\n", a.AlarmPriority))
+
+	alarmMethodText, found := alarmMethods[a.AlarmMethod]
+	if found {
+		buf.WriteString(fmt.Sprintf("报警方式：%s\n", alarmMethodText))
+	}
+
+	buf.WriteString(fmt.Sprintf("报警时间：%s\n", a.AlarmTime))
+	buf.WriteString(fmt.Sprintf("报警内容描述：%s\n", a.AlarmDescription))
+	buf.WriteString(fmt.Sprintf("经纬度信息：%s,%s\n", a.Longitude, a.Latitude))
+	buf.WriteString("扩展信息：\n")
+
+	alarmTypeText, found := alarmTypes[a.Info.AlarmType]
+	if found {
+		buf.WriteString(fmt.Sprintf("\t报警类型：%s\n", alarmTypeText))
+
+		if a.Info.AlarmType == "11" {
+			eventTypes := map[string]string{
+				"1": "进入区域",
+				"2": "离开区域",
+			}
+			eventTypeText, found := eventTypes[a.Info.AlarmTypeParam.EventType]
+			if found {
+				buf.WriteString(fmt.Sprintf("\t\t事件类型：%s\n", eventTypeText))
+			}
+		}
+	}
+
+	return buf.String()
+}

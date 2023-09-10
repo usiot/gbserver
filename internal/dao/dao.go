@@ -25,8 +25,8 @@ var (
 	db *sqlx.DB
 )
 
-func Init(host, port, user, password, dbname string) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, password, host, port, dbname)
+func Init(host string, port uint16, user, password, dbname string) {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, password, host, port, dbname)
 	db = sqlx.MustConnect("mysql", dsn)
 	db.SetConnMaxIdleTime(300 * time.Second)
 	db.SetMaxOpenConns(120)

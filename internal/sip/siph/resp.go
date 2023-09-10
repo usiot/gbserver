@@ -78,9 +78,7 @@ func CatalogHandler(req sip.Request, tx sip.ServerTransaction) {
 }
 
 func DeviceStatusHandler(req sip.Request, tx sip.ServerTransaction) {
-	defer func() {
-		_ = responseAck(tx, req)
-	}()
+	defer responseAck(tx, req)
 
 	var ds DeviceStatus
 	err := UnmarshalReq(req.Body(), &ds)

@@ -1,0 +1,27 @@
+{
+    "redis": "redis://localhost:6379/",
+    "sip": {
+        "sipId": "44010200492000000001",
+        "sipDomain": "4401020049",
+        "host": "0.0.0.0",
+        "sipPort": 5060,
+        "sipAddress": "192.168.124.25",
+        "network": "tcp",
+        "password": "admin123",
+        "userAgent": "gbsever/usiot"
+    },
+    "log": {
+        "filename": "usiot.log",
+        "maxSize": 100,
+        "maxAge": 60,
+        "level": 1,
+        "maxBackups": 10
+    },
+    "mysql": {
+        "host": "127.0.0.1",
+        "port": 3306,
+        "user": "root",
+        "password": "1234",
+        "dbname": "usiot"
+    }
+}
